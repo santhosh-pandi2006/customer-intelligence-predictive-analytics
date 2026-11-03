@@ -1,0 +1,57 @@
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+
+# Test and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit
+.streamlit/secrets.toml
+# Raw dataset
+data/raw/
+
+# Processed files not required by dashboard
+data/processed/churn_feature_importance.csv
+data/processed/churn_model_dataset.csv
+data/processed/customer_historical_clv.csv
+data/processed/customer_retention_analysis.csv
+data/processed/high_value_churned_customers.csv
+data/processed/X_train_scaled.npy
+data/processed/X_test_scaled.npy
+data/processed/y_train.npy
+data/processed/y_test.npy
+
+# Unused machine learning models
+models/logistic_regression_model.pkl
+models/random_forest_model.pkl
+models/xgboost_model.pkl
+models/churn_scaler.pkl
