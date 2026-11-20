@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
+from common_style import apply_app_style
 
 # Project paths
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -13,72 +14,12 @@ st.set_page_config(
     page_title="Customer Intelligence Platform",
     layout="wide"
 )
-
+apply_app_style()
 # Custom Dashboard Styling
-st.markdown("""
-<style>
-
-/* Main background */
-.stApp {
-    background-color: #F4F6FC;
-}
-
-/* Main content spacing */
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
-
-/* Main headings */
-h1, h2, h3 {
-    color: #172554;
-    font-weight: 700;
-}
-
-/* KPI metric cards */
-[data-testid="stMetric"] {
-    background: linear-gradient(135deg, #FFFFFF, #E8EEFF);
-    padding: 22px 20px;
-    border-radius: 15px;
-    border-left: 5px solid #6366F1;
-    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.08);
-}
-
-/* KPI labels */
-[data-testid="stMetricLabel"] {
-    color: #475569;
-    font-weight: 600;
-}
-
-/* KPI values */
-[data-testid="stMetricValue"] {
-    color: #312E81;
-    font-weight: 800;
-}
-
-/* Divider */
-hr {
-    border-color: #D8DEEE;
-}
-
-/* Information box */
-.stAlert {
-    border-radius: 12px;
-}
-
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #172554, #312E81);
-}
-
-[data-testid="stSidebar"] * {
-    color: white;
-}
-
-</style>
-""", unsafe_allow_html=True)
 
 
+
+# Load datasets
 # Load datasets
 # Load datasets
 sales = pd.read_csv(
@@ -90,9 +31,6 @@ sales = pd.read_csv(
 
 rfm = pd.read_csv(DATA_DIR / "customer_rfm_segments.csv")
 churn = pd.read_csv(DATA_DIR / "customer_churn_analysis.csv")
-rfm = pd.read_csv(DATA_DIR / "customer_rfm_segments.csv")
-churn = pd.read_csv(DATA_DIR / "customer_churn_analysis.csv")
-
 # Dashboard heading
 
 # Gradient Dashboard Header

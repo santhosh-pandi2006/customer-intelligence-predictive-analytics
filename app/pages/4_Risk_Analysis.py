@@ -1,18 +1,26 @@
 
 from pathlib import Path
+import sys
 
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
 # --------------------------------------------------
-# 1. PAGE CONFIGURATION
+# 1. PAGE CONFIGURATION AND SHARED STYLING
 # --------------------------------------------------
 
 st.set_page_config(
     page_title="Customer Risk Analysis",
     layout="wide"
 )
+
+APP_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(APP_DIR))
+
+from common_style import apply_app_style
+
+apply_app_style()
 
 st.title("Customer Risk Analysis")
 
@@ -22,7 +30,41 @@ st.write(
 )
 
 # --------------------------------------------------
-# 2. LOAD CUSTOMER PREDICTIONS
+# 2. THEME-AWARE CHART STYLING
+# --------------------------------------------------
+
+theme = st.get_option("theme.base") or "light"
+
+if theme == "dark":
+    chart_bg = "#0E1117"
+    chart_text = "#FAFAFA"
+    grid_color = "#64748B"
+else:
+    chart_bg = "#FFFFFF"
+    chart_text = "#172554"
+    grid_color = "#CBD5E1"
+
+
+def style_chart(fig, ax):
+    fig.patch.set_facecolor(chart_bg)
+    ax.set_facecolor(chart_bg)
+
+    ax.tick_params(colors=chart_text)
+    ax.xaxis.label.set_color(chart_text)
+    ax.yaxis.label.set_color(chart_text)
+    ax.title.set_color(chart_text)
+
+    for spine in ax.spines.values():
+        spine.set_color(grid_color)
+
+    ax.grid(
+        color=grid_color,
+        alpha=0.25
+    )
+
+
+# --------------------------------------------------
+# 3. LOAD CUSTOMER PREDICTIONS
 # --------------------------------------------------
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -33,6 +75,7 @@ DATA_PATH = (
     / "processed"
     / "customer_churn_predictions.csv"
 )
+
 
 @st.cache_data
 def load_predictions():
@@ -59,8 +102,13 @@ def load_predictions():
 
     return data
 
+
 try:
     predictions = load_predictions()
+
+    if predictions.empty:
+        st.error("The customer prediction dataset is empty.")
+        st.stop()
 
     st.success(
         f"Successfully loaded predictions for "
@@ -75,13 +123,20 @@ except Exception as e:
     st.error(f"Error loading predictions: {e}")
     st.stop()
 
+
 # --------------------------------------------------
-# 3. RISK CATEGORY SUMMARY
+# 4. RISK CATEGORY SUMMARY
 # --------------------------------------------------
 
 st.divider()
 
 st.header("Customer Risk Overview")
+
+risk_order = [
+    "High Risk",
+    "Medium Risk",
+    "Low Risk"
+]
 
 risk_counts = predictions["Risk_Category"].value_counts()
 
@@ -120,19 +175,14 @@ col4.metric(
     f"{low_percentage:.2f}%"
 )
 
+
 # --------------------------------------------------
-# 4. CUSTOMER DISTRIBUTION BY RISK
+# 5. CUSTOMER DISTRIBUTION BY RISK
 # --------------------------------------------------
 
 st.divider()
 
 st.header("Risk Category Distribution")
-
-risk_order = [
-    "High Risk",
-    "Medium Risk",
-    "Low Risk"
-]
 
 risk_distribution = (
     predictions["Risk_Category"]
@@ -140,24 +190,23 @@ risk_distribution = (
     .reindex(risk_order, fill_value=0)
 )
 
+risk_percentages = (
+    risk_distribution / total_customers * 100
+)
+
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Customer Count by Risk")
-
     st.bar_chart(risk_distribution)
 
 with col2:
     st.subheader("Risk Category Percentages")
-
-    risk_percentages = (
-        risk_distribution / total_customers * 100
-    )
-
     st.bar_chart(risk_percentages)
 
+
 # --------------------------------------------------
-# 5. CHURN PROBABILITY DISTRIBUTION
+# 6. CHURN PROBABILITY DISTRIBUTION
 # --------------------------------------------------
 
 st.divider()
@@ -167,20 +216,23 @@ st.header("Churn Probability Analysis")
 fig, ax = plt.subplots(figsize=(10, 4))
 
 ax.hist(
-    predictions["Churn_Probability"],
+    predictions["Churn_Probability"].dropna(),
     bins=20,
-    edgecolor="black"
+    edgecolor=chart_bg
 )
 
 ax.set_title("Distribution of Customer Churn Probabilities")
 ax.set_xlabel("Churn Probability")
 ax.set_ylabel("Number of Customers")
 
-st.pyplot(fig)
+style_chart(fig, ax)
+
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
+
 # --------------------------------------------------
-# 6. ACTUAL CHURN RATE BY RISK CATEGORY
+# 7. ACTUAL CHURN RATE BY RISK CATEGORY
 # --------------------------------------------------
 
 st.divider()
@@ -208,6 +260,8 @@ risk_performance["Actual_Churn_Rate"] = (
 
 risk_performance["Average_Churn_Probability"] *= 100
 
+risk_performance = risk_performance.fillna(0)
+
 st.dataframe(
     risk_performance.round(2),
     width="stretch",
@@ -225,11 +279,14 @@ ax.set_title("Actual Churn Rate by Risk Category")
 ax.set_xlabel("Risk Category")
 ax.set_ylabel("Actual Churn Rate (%)")
 
-st.pyplot(fig)
+style_chart(fig, ax)
+
+st.pyplot(fig, use_container_width=True)
 plt.close(fig)
 
+
 # --------------------------------------------------
-# 7. RETENTION STRATEGIES
+# 8. RETENTION STRATEGIES
 # --------------------------------------------------
 
 st.divider()
@@ -262,8 +319,9 @@ st.dataframe(
     hide_index=True
 )
 
+
 # --------------------------------------------------
-# 8. CUSTOMER FILTER
+# 9. CUSTOMER RISK FILTER
 # --------------------------------------------------
 
 st.divider()
@@ -286,8 +344,9 @@ st.write(
     f"Showing {len(filtered_data):,} customers."
 )
 
+
 # --------------------------------------------------
-# 9. CUSTOMER TABLE
+# 10. CUSTOMER DETAILS TABLE
 # --------------------------------------------------
 
 display_columns = [
@@ -316,30 +375,37 @@ display_data = display_data.rename(
     }
 )
 
+display_data = display_data.sort_values(
+    by="Churn Probability (%)",
+    ascending=False
+)
+
 st.dataframe(
-    display_data.sort_values(
-        by="Churn Probability (%)",
-        ascending=False
-    ),
+    display_data,
     width="stretch",
     hide_index=True
 )
 
+
 # --------------------------------------------------
-# 10. DOWNLOAD FILTERED CUSTOMER DATA
+# 11. DOWNLOAD FILTERED CUSTOMER DATA
 # --------------------------------------------------
 
-csv_data = filtered_data.to_csv(index=False).encode("utf-8")
+csv_data = filtered_data.to_csv(
+    index=False
+).encode("utf-8")
 
 st.download_button(
     label="Download Customer Risk Report",
     data=csv_data,
     file_name="customer_risk_analysis.csv",
-    mime="text/csv"
+    mime="text/csv",
+    use_container_width=True
 )
 
+
 # --------------------------------------------------
-# 11. PROJECT DISCLAIMER
+# 12. PROJECT DISCLAIMER
 # --------------------------------------------------
 
 st.divider()

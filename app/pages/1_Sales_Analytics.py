@@ -1,4 +1,5 @@
 
+import sys
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +14,17 @@ st.set_page_config(
     page_title="Sales Analytics",
     layout="wide"
 )
+
+# ==========================================
+# IMPORT SHARED STYLING
+# ==========================================
+
+APP_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(APP_DIR))
+
+from common_style import apply_app_style
+
+apply_app_style()
 
 # ==========================================
 # PROJECT PATHS
@@ -41,45 +53,49 @@ def load_sales_data():
 sales = load_sales_data()
 
 # ==========================================
-# PAGE STYLING
+# THEME-AWARE CHART SETTINGS
 # ==========================================
 
-st.markdown("""
-<style>
-.stApp {
-    background-color: #F4F6FC;
-}
+theme = st.get_option("theme.base") or "light"
 
-h1, h2, h3 {
-    color: #172554;
-    font-weight: 700;
-}
+if theme == "dark":
+    chart_bg = "#0E1117"
+    chart_text = "#FAFAFA"
+    grid_color = "#64748B"
+else:
+    chart_bg = "#FFFFFF"
+    chart_text = "#172554"
+    grid_color = "#CBD5E1"
 
-[data-testid="stMetric"] {
-    background: linear-gradient(135deg, #FFFFFF, #E8EEFF);
-    padding: 20px;
-    border-radius: 15px;
-    border-left: 5px solid #6366F1;
-    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.08);
-}
 
-[data-testid="stMetricValue"] {
-    color: #312E81;
-    font-weight: 800;
-}
-</style>
-""", unsafe_allow_html=True)
+def style_chart(fig, ax):
+    fig.patch.set_facecolor(chart_bg)
+    ax.set_facecolor(chart_bg)
+
+    ax.tick_params(colors=chart_text)
+    ax.xaxis.label.set_color(chart_text)
+    ax.yaxis.label.set_color(chart_text)
+
+    ax.title.set_color(chart_text)
+
+    for spine in ax.spines.values():
+        spine.set_color(grid_color)
+
+    ax.grid(color=grid_color, alpha=0.25)
+
 
 # ==========================================
 # PAGE HEADER
 # ==========================================
 
 st.title("Sales Analytics")
-st.write("Explore revenue, orders, products and geographic sales performance.")
+
+st.write(
+    "Explore revenue, orders, products and geographic sales performance."
+)
 
 st.divider()
 
-# Dataset information
 st.caption(f"Total transaction records: {len(sales):,}")
 
 # ==========================================
@@ -92,7 +108,7 @@ total_customers = sales["Customer ID"].nunique()
 total_quantity = sales["Quantity"].sum()
 
 # ==========================================
-# COLORFUL KPI CARDS
+# SALES PERFORMANCE OVERVIEW
 # ==========================================
 
 st.divider()
@@ -101,42 +117,62 @@ st.subheader("Sales Performance Overview")
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 with kpi1:
-    st.markdown("""
-    <div style="background:linear-gradient(135deg,#1D4ED8,#6366F1);
-    padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">Total Revenue</h4>
-    <h2 style="color:white;">£10.64M</h2>
-    <p>Recorded sales revenue</p>
+    st.markdown(f"""
+    <div style="
+        background:linear-gradient(135deg,#1D4ED8,#6366F1);
+        padding:20px;
+        border-radius:15px;
+        color:white;
+        min-height:130px;
+    ">
+        <h4 style="color:white;">Total Revenue</h4>
+        <h2 style="color:white;">£{total_revenue / 1_000_000:.2f}M</h2>
+        <p>Recorded sales revenue</p>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi2:
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#047857,#10B981);
-    padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">Total Orders</h4>
-    <h2 style="color:white;">{total_orders:,}</h2>
-    <p>Unique invoices</p>
+    <div style="
+        background:linear-gradient(135deg,#047857,#10B981);
+        padding:20px;
+        border-radius:15px;
+        color:white;
+        min-height:130px;
+    ">
+        <h4 style="color:white;">Total Orders</h4>
+        <h2 style="color:white;">{total_orders:,}</h2>
+        <p>Unique invoices</p>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi3:
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#7E22CE,#A855F7);
-    padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">Total Customers</h4>
-    <h2 style="color:white;">{total_customers:,}</h2>
-    <p>Identified customers</p>
+    <div style="
+        background:linear-gradient(135deg,#7E22CE,#A855F7);
+        padding:20px;
+        border-radius:15px;
+        color:white;
+        min-height:130px;
+    ">
+        <h4 style="color:white;">Total Customers</h4>
+        <h2 style="color:white;">{total_customers:,}</h2>
+        <p>Identified customers</p>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi4:
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#C2410C,#F97316);
-    padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">Quantity Sold</h4>
-    <h2 style="color:white;">{total_quantity:,}</h2>
-    <p>Total units</p>
+    <div style="
+        background:linear-gradient(135deg,#C2410C,#F97316);
+        padding:20px;
+        border-radius:15px;
+        color:white;
+        min-height:130px;
+    ">
+        <h4 style="color:white;">Quantity Sold</h4>
+        <h2 style="color:white;">{total_quantity:,}</h2>
+        <p>Total units</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -145,9 +181,9 @@ with kpi4:
 # ==========================================
 
 st.divider()
+
 st.header("Sales Trends & Geographic Performance")
 
-# Prepare monthly revenue
 sales["Month"] = sales["InvoiceDate"].dt.to_period("M").astype(str)
 
 monthly_revenue = (
@@ -156,7 +192,6 @@ monthly_revenue = (
     .reset_index()
 )
 
-# Prepare country-wise revenue
 country_revenue = (
     sales.groupby("Country")["Revenue"]
     .sum()
@@ -165,7 +200,6 @@ country_revenue = (
     .sort_values()
 )
 
-# Display charts side by side
 col1, col2 = st.columns(2)
 
 # ==========================================
@@ -183,7 +217,7 @@ with col1:
         marker="o",
         linewidth=3,
         markersize=7,
-        color="#6366F1"
+        color="#818CF8"
     )
 
     ax1.fill_between(
@@ -196,10 +230,11 @@ with col1:
     ax1.set_xlabel("Month")
     ax1.set_ylabel("Revenue (£)")
     ax1.tick_params(axis="x", rotation=45)
-    ax1.grid(alpha=0.25)
+
+    style_chart(fig1, ax1)
 
     fig1.tight_layout()
-    st.pyplot(fig1)
+    st.pyplot(fig1, use_container_width=True)
     plt.close(fig1)
 
 # ==========================================
@@ -223,10 +258,11 @@ with col2:
 
     ax2.set_xlabel("Revenue (£)")
     ax2.set_ylabel("Country")
-    ax2.grid(axis="x", alpha=0.25)
+
+    style_chart(fig2, ax2)
 
     fig2.tight_layout()
-    st.pyplot(fig2)
+    st.pyplot(fig2, use_container_width=True)
     plt.close(fig2)
 
 # ==========================================
@@ -234,9 +270,9 @@ with col2:
 # ==========================================
 
 st.divider()
+
 st.header("Top Performing Products")
 
-# Exclude known non-standard transaction descriptions
 special_descriptions = [
     "AMAZON FEE",
     "Adjust bad debt",
@@ -249,7 +285,6 @@ product_sales = sales[
     ~sales["Description"].isin(special_descriptions)
 ].copy()
 
-# Aggregate product performance
 product_summary = (
     product_sales.groupby(["StockCode", "Description"])
     .agg(
@@ -260,13 +295,11 @@ product_summary = (
     .reset_index()
 )
 
-# Top 10 products by revenue
 top_revenue = (
     product_summary.nlargest(10, "Total_Revenue")
     .sort_values("Total_Revenue")
 )
 
-# Top 10 products by quantity
 top_quantity = (
     product_summary.nlargest(10, "Total_Quantity")
     .sort_values("Total_Quantity")
@@ -293,10 +326,11 @@ with col1:
 
     ax3.set_xlabel("Revenue (£)")
     ax3.set_ylabel("Product")
-    ax3.grid(axis="x", alpha=0.25)
+
+    style_chart(fig3, ax3)
 
     fig3.tight_layout()
-    st.pyplot(fig3)
+    st.pyplot(fig3, use_container_width=True)
     plt.close(fig3)
 
 # ==========================================
@@ -318,18 +352,23 @@ with col2:
 
     ax4.set_xlabel("Quantity Sold")
     ax4.set_ylabel("Product")
-    ax4.grid(axis="x", alpha=0.25)
+
+    style_chart(fig4, ax4)
 
     fig4.tight_layout()
-    st.pyplot(fig4)
+    st.pyplot(fig4, use_container_width=True)
     plt.close(fig4)
 
-# Display product performance table
+# ==========================================
+# PRODUCT PERFORMANCE TABLE
+# ==========================================
+
 st.subheader("Product Performance Details")
 
 st.dataframe(
     product_summary.sort_values(
-        "Total_Revenue", ascending=False
+        "Total_Revenue",
+        ascending=False
     ).head(10),
     width="stretch",
     hide_index=True

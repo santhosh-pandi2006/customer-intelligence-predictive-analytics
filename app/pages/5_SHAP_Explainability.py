@@ -1,11 +1,13 @@
 
+import sys
+from pathlib import Path
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from pathlib import Path
 
 # --------------------------------------------------
-# PAGE CONFIGURATION
+# 1. PAGE CONFIGURATION
 # --------------------------------------------------
 
 st.set_page_config(
@@ -13,8 +15,15 @@ st.set_page_config(
     layout="wide"
 )
 
+APP_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(APP_DIR))
+
+from common_style import apply_app_style
+
+apply_app_style()
+
 # --------------------------------------------------
-# PROJECT PATH
+# 2. PROJECT PATH
 # --------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -27,7 +36,43 @@ SHAP_FILE = (
 )
 
 # --------------------------------------------------
-# LOAD SHAP DATA
+# 3. THEME-AWARE CHART STYLING
+# --------------------------------------------------
+
+theme = st.get_option("theme.base") or "light"
+
+if theme == "dark":
+    chart_bg = "#0E1117"
+    chart_text = "#FAFAFA"
+    grid_color = "#64748B"
+else:
+    chart_bg = "#FFFFFF"
+    chart_text = "#172554"
+    grid_color = "#CBD5E1"
+
+
+def style_chart(fig, ax):
+    fig.patch.set_facecolor(chart_bg)
+    ax.set_facecolor(chart_bg)
+
+    ax.tick_params(colors=chart_text)
+    ax.xaxis.label.set_color(chart_text)
+    ax.yaxis.label.set_color(chart_text)
+    ax.title.set_color(chart_text)
+
+    for spine in ax.spines.values():
+        spine.set_color(grid_color)
+
+    ax.grid(
+        axis="x",
+        color=grid_color,
+        linestyle="--",
+        alpha=0.4
+    )
+
+
+# --------------------------------------------------
+# 4. LOAD SHAP DATA
 # --------------------------------------------------
 
 @st.cache_data
@@ -65,7 +110,7 @@ def load_shap_data():
 
 
 # --------------------------------------------------
-# MAIN PAGE
+# 5. MAIN PAGE
 # --------------------------------------------------
 
 st.title("SHAP Model Explainability")
@@ -79,11 +124,15 @@ st.write(
 st.divider()
 
 # --------------------------------------------------
-# LOAD DATA WITH ERROR HANDLING
+# 6. LOAD DATA WITH ERROR HANDLING
 # --------------------------------------------------
 
 try:
     shap_df = load_shap_data()
+
+    if shap_df.empty:
+        st.error("No valid SHAP feature importance data found.")
+        st.stop()
 
     st.success(
         "SHAP feature importance loaded successfully!"
@@ -102,7 +151,7 @@ except Exception as e:
 
 
 # --------------------------------------------------
-# FEATURE IMPORTANCE OVERVIEW
+# 7. FEATURE IMPORTANCE OVERVIEW
 # --------------------------------------------------
 
 st.header("SHAP Feature Importance Overview")
@@ -116,7 +165,7 @@ col1.metric(
 
 col2.metric(
     "Most Important Feature",
-    shap_df.iloc[0]["Feature"]
+    str(shap_df.iloc[0]["Feature"])
 )
 
 col3.metric(
@@ -128,7 +177,7 @@ st.divider()
 
 
 # --------------------------------------------------
-# SHAP FEATURE IMPORTANCE BAR CHART
+# 8. SHAP FEATURE IMPORTANCE BAR CHART
 # --------------------------------------------------
 
 st.header("Feature Importance Ranking")
@@ -140,7 +189,9 @@ shap_plot = shap_df.sort_values(
     ascending=True
 )
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(
+    figsize=(10, max(5, len(shap_plot) * 0.4))
+)
 
 ax.barh(
     shap_plot["Feature"],
@@ -154,15 +205,14 @@ ax.set_title(
     "SHAP Feature Importance for Churn Prediction"
 )
 
-ax.grid(
-    axis="x",
-    linestyle="--",
-    alpha=0.4
-)
+style_chart(fig, ax)
 
 plt.tight_layout()
 
-st.pyplot(fig)
+st.pyplot(
+    fig,
+    use_container_width=True
+)
 
 plt.close(fig)
 
@@ -175,7 +225,7 @@ st.divider()
 
 
 # --------------------------------------------------
-# SHAP FEATURE IMPORTANCE TABLE
+# 9. SHAP FEATURE IMPORTANCE TABLE
 # --------------------------------------------------
 
 st.header("SHAP Feature Importance Details")
@@ -202,7 +252,7 @@ st.divider()
 
 
 # --------------------------------------------------
-# INDIVIDUAL FEATURE INTERPRETATION
+# 10. INDIVIDUAL FEATURE INTERPRETATION
 # --------------------------------------------------
 
 st.header("Understanding Important Features")
@@ -246,6 +296,8 @@ feature_explanations = {
     )
 }
 
+max_importance = shap_df["Mean_SHAP_Importance"].max()
+
 for _, row in shap_df.iterrows():
 
     feature = row["Feature"]
@@ -263,14 +315,14 @@ for _, row in shap_df.iterrows():
 
         st.write(explanation)
 
+        progress_value = (
+            float(importance / max_importance)
+            if max_importance > 0
+            else 0.0
+        )
+
         st.progress(
-            min(
-                float(
-                    importance /
-                    shap_df["Mean_SHAP_Importance"].max()
-                ),
-                1.0
-            )
+            min(max(progress_value, 0.0), 1.0)
         )
 
 
@@ -278,7 +330,7 @@ st.divider()
 
 
 # --------------------------------------------------
-# KEY BUSINESS INSIGHTS
+# 11. KEY BUSINESS INSIGHTS
 # --------------------------------------------------
 
 st.header("Key Business Insights")
@@ -324,7 +376,7 @@ st.divider()
 
 
 # --------------------------------------------------
-# HOW SHAP WORKS
+# 12. HOW SHAP WORKS
 # --------------------------------------------------
 
 st.header("Understanding SHAP")
@@ -356,7 +408,7 @@ st.info(
 
 
 # --------------------------------------------------
-# FOOTER
+# 13. FOOTER
 # --------------------------------------------------
 
 st.divider()
