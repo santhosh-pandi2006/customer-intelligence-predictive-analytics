@@ -11,7 +11,6 @@ DATA_DIR = BASE_DIR / "data" / "processed"
 # Page configuration
 st.set_page_config(
     page_title="Customer Intelligence Platform",
-    page_icon="📊",
     layout="wide"
 )
 
@@ -108,7 +107,7 @@ st.markdown("""
     box-shadow: 0 6px 18px rgba(79, 70, 229, 0.20);
 ">
     <h1 style="color: white; font-size: 32px; margin-bottom: 10px;">
-        📊 Customer Intelligence & Predictive Analytics
+         Customer Intelligence & Predictive Analytics
     </h1>
     <p style="color: #E0E7FF; font-size: 16px; margin: 0;">
         Transforming retail data into actionable business insights through analytics and machine learning.
@@ -159,7 +158,7 @@ st.info("Use the sidebar to explore the different analytics modules.")
 # ==========================================
 
 st.divider()
-st.header("📈 Business Analytics Overview")
+st.header("Business Analytics Overview")
 
 # Prepare monthly revenue
 sales["Month"] = sales["InvoiceDate"].dt.to_period("M").astype(str)
@@ -235,7 +234,7 @@ with col2:
 # ==========================================
 
 st.divider()
-st.header("💡 Key Business Insights")
+st.header("Key Business Insights")
 
 # Calculate insights
 highest_month = monthly_revenue.loc[
@@ -259,7 +258,7 @@ with insight1:
         color: white;
         min-height: 145px;
     ">
-        <h4 style="color: white;">🏆 Highest Revenue Month</h4>
+        <h4 style="color: white;">Highest Revenue Month</h4>
         <h2 style="color: white;">{highest_month['Month']}</h2>
         <p>£{highest_month['Revenue']:,.2f}</p>
     </div>
@@ -274,7 +273,7 @@ with insight2:
         color: white;
         min-height: 145px;
     ">
-        <h4 style="color: white;">👥 Largest Customer Segment</h4>
+        <h4 style="color: white;">Largest Customer Segment</h4>
         <h2 style="color: white;">{largest_segment}</h2>
         <p>{largest_segment_count:,} customers</p>
     </div>
@@ -289,7 +288,7 @@ with insight3:
         color: white;
         min-height: 145px;
     ">
-        <h4 style="color: white;">📊 Customer Segments</h4>
+        <h4 style="color: white;">Customer Segments</h4>
         <h2 style="color: white;">{total_segments}</h2>
         <p>RFM customer categories</p>
     </div>

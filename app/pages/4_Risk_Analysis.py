@@ -11,11 +11,10 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(
     page_title="Customer Risk Analysis",
-    page_icon="⚠️",
     layout="wide"
 )
 
-st.title("⚠️ Customer Risk Analysis")
+st.title("Customer Risk Analysis")
 
 st.write(
     "Identify customers at risk of churn and "
@@ -82,7 +81,7 @@ except Exception as e:
 
 st.divider()
 
-st.header("📊 Customer Risk Overview")
+st.header("Customer Risk Overview")
 
 risk_counts = predictions["Risk_Category"].value_counts()
 
@@ -127,7 +126,7 @@ col4.metric(
 
 st.divider()
 
-st.header("📈 Risk Category Distribution")
+st.header("Risk Category Distribution")
 
 risk_order = [
     "High Risk",
@@ -163,7 +162,7 @@ with col2:
 
 st.divider()
 
-st.header("🎯 Churn Probability Analysis")
+st.header("Churn Probability Analysis")
 
 fig, ax = plt.subplots(figsize=(10, 4))
 
@@ -186,7 +185,7 @@ plt.close(fig)
 
 st.divider()
 
-st.header("📉 Actual Churn Rate by Risk Category")
+st.header("Actual Churn Rate by Risk Category")
 
 risk_performance = (
     predictions.groupby("Risk_Category")
@@ -235,7 +234,7 @@ plt.close(fig)
 
 st.divider()
 
-st.header("💡 Recommended Retention Strategies")
+st.header("Recommended Retention Strategies")
 
 strategy_data = [
     {
@@ -269,7 +268,7 @@ st.dataframe(
 
 st.divider()
 
-st.header("🔍 Customer Risk Details")
+st.header("Customer Risk Details")
 
 selected_risk = st.selectbox(
     "Select Risk Category",
@@ -333,7 +332,7 @@ st.dataframe(
 csv_data = filtered_data.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    label="📥 Download Customer Risk Report",
+    label="Download Customer Risk Report",
     data=csv_data,
     file_name="customer_risk_analysis.csv",
     mime="text/csv"

@@ -11,7 +11,6 @@ from pathlib import Path
 
 st.set_page_config(
     page_title="Customer Segmentation",
-    page_icon="👥",
     layout="wide"
 )
 
@@ -34,7 +33,7 @@ segment_analysis = pd.read_csv(
 # PAGE HEADER
 # ==========================================
 
-st.title("👥 Customer Segmentation Analysis")
+st.title("Customer Segmentation Analysis")
 
 st.write(
     "Understand customer behaviour using "
@@ -48,7 +47,7 @@ st.success(
 )
 # Customer Segment Overview
 st.divider()
-st.header("📊 Customer Segment Overview")
+st.header("Customer Segment Overview")
 
 # Calculate segment statistics
 segment_summary = (
@@ -85,7 +84,7 @@ st.dataframe(
 import matplotlib.pyplot as plt
 
 st.divider()
-st.header("📊 Customer Segment Visualizations")
+st.header("Customer Segment Visualizations")
 
 col1, col2 = st.columns(2)
 

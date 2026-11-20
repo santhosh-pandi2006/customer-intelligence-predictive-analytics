@@ -10,7 +10,6 @@ from pathlib import Path
 
 st.set_page_config(
     page_title="SHAP Explainability",
-    page_icon="🔍",
     layout="wide"
 )
 
@@ -69,7 +68,7 @@ def load_shap_data():
 # MAIN PAGE
 # --------------------------------------------------
 
-st.title("🔍 SHAP Model Explainability")
+st.title("SHAP Model Explainability")
 
 st.write(
     "Understand how customer behaviour influences "
@@ -106,7 +105,7 @@ except Exception as e:
 # FEATURE IMPORTANCE OVERVIEW
 # --------------------------------------------------
 
-st.header("📊 SHAP Feature Importance Overview")
+st.header("SHAP Feature Importance Overview")
 
 col1, col2, col3 = st.columns(3)
 
@@ -132,7 +131,7 @@ st.divider()
 # SHAP FEATURE IMPORTANCE BAR CHART
 # --------------------------------------------------
 
-st.header("🏆 Feature Importance Ranking")
+st.header("Feature Importance Ranking")
 
 st.subheader("Mean Absolute SHAP Values")
 
@@ -179,7 +178,7 @@ st.divider()
 # SHAP FEATURE IMPORTANCE TABLE
 # --------------------------------------------------
 
-st.header("📋 SHAP Feature Importance Details")
+st.header("SHAP Feature Importance Details")
 
 display_df = shap_df.copy()
 
@@ -206,7 +205,7 @@ st.divider()
 # INDIVIDUAL FEATURE INTERPRETATION
 # --------------------------------------------------
 
-st.header("🔎 Understanding Important Features")
+st.header("Understanding Important Features")
 
 feature_explanations = {
     "Active_Days": (
@@ -282,7 +281,7 @@ st.divider()
 # KEY BUSINESS INSIGHTS
 # --------------------------------------------------
 
-st.header("💡 Key Business Insights")
+st.header("Key Business Insights")
 
 top_features = shap_df.head(3)
 
@@ -328,7 +327,7 @@ st.divider()
 # HOW SHAP WORKS
 # --------------------------------------------------
 
-st.header("📘 Understanding SHAP")
+st.header("Understanding SHAP")
 
 st.markdown("""
 **SHAP (SHapley Additive exPlanations)** is a model

@@ -22,11 +22,10 @@ model = joblib.load(
 
 st.set_page_config(
     page_title="Churn Prediction",
-    page_icon="📉",
     layout="wide"
 )
 
-st.title("📉 Customer Churn Prediction")
+st.title("Customer Churn Prediction")
 st.write(
     "Analyze customer churn patterns and evaluate "
     "the performance of our machine learning model."
@@ -34,7 +33,7 @@ st.write(
 
 st.success("Churn dataset and optimized model loaded successfully!")
 st.divider()
-st.header("📊 Model Performance")
+st.header("Model Performance")
 
 # Model evaluation metrics from our Day 20 results
 col1, col2, col3, col4 = st.columns(4)
@@ -50,7 +49,7 @@ st.caption(
 )
 
 st.divider()
-st.header("🎯 Churn Prediction Dataset Overview")
+st.header("Churn Prediction Dataset Overview")
 
 total_customers = len(model_data)
 churned_customers = int(model_data["Churn"].sum())

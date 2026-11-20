@@ -11,7 +11,6 @@ import numpy as np
 
 st.set_page_config(
     page_title="Sales Analytics",
-    page_icon="📈",
     layout="wide"
 )
 
@@ -75,7 +74,7 @@ h1, h2, h3 {
 # PAGE HEADER
 # ==========================================
 
-st.title("📈 Sales Analytics")
+st.title("Sales Analytics")
 st.write("Explore revenue, orders, products and geographic sales performance.")
 
 st.divider()
@@ -97,7 +96,7 @@ total_quantity = sales["Quantity"].sum()
 # ==========================================
 
 st.divider()
-st.subheader("📊 Sales Performance Overview")
+st.subheader("Sales Performance Overview")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
@@ -105,7 +104,7 @@ with kpi1:
     st.markdown("""
     <div style="background:linear-gradient(135deg,#1D4ED8,#6366F1);
     padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">💰 Total Revenue</h4>
+    <h4 style="color:white;">Total Revenue</h4>
     <h2 style="color:white;">£10.64M</h2>
     <p>Recorded sales revenue</p>
     </div>
@@ -125,7 +124,7 @@ with kpi3:
     st.markdown(f"""
     <div style="background:linear-gradient(135deg,#7E22CE,#A855F7);
     padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">👥 Total Customers</h4>
+    <h4 style="color:white;">Total Customers</h4>
     <h2 style="color:white;">{total_customers:,}</h2>
     <p>Identified customers</p>
     </div>
@@ -135,7 +134,7 @@ with kpi4:
     st.markdown(f"""
     <div style="background:linear-gradient(135deg,#C2410C,#F97316);
     padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">📦 Quantity Sold</h4>
+    <h4 style="color:white;">Quantity Sold</h4>
     <h2 style="color:white;">{total_quantity:,}</h2>
     <p>Total units</p>
     </div>
@@ -146,7 +145,7 @@ with kpi4:
 # ==========================================
 
 st.divider()
-st.header("🌍 Sales Trends & Geographic Performance")
+st.header("Sales Trends & Geographic Performance")
 
 # Prepare monthly revenue
 sales["Month"] = sales["InvoiceDate"].dt.to_period("M").astype(str)
@@ -174,7 +173,7 @@ col1, col2 = st.columns(2)
 # ==========================================
 
 with col1:
-    st.subheader("📈 Monthly Revenue Trend")
+    st.subheader("Monthly Revenue Trend")
 
     fig1, ax1 = plt.subplots(figsize=(9, 5))
 
@@ -208,7 +207,7 @@ with col1:
 # ==========================================
 
 with col2:
-    st.subheader("🌍 Top 10 Countries by Revenue")
+    st.subheader("Top 10 Countries by Revenue")
 
     fig2, ax2 = plt.subplots(figsize=(9, 5))
 
@@ -235,7 +234,7 @@ with col2:
 # ==========================================
 
 st.divider()
-st.header("🏆 Top Performing Products")
+st.header("Top Performing Products")
 
 # Exclude known non-standard transaction descriptions
 special_descriptions = [
@@ -280,7 +279,7 @@ col1, col2 = st.columns(2)
 # ==========================================
 
 with col1:
-    st.subheader("💰 Top 10 Products by Revenue")
+    st.subheader("Top 10 Products by Revenue")
 
     fig3, ax3 = plt.subplots(figsize=(10, 6))
 
@@ -305,7 +304,7 @@ with col1:
 # ==========================================
 
 with col2:
-    st.subheader("📦 Top 10 Products by Quantity")
+    st.subheader("Top 10 Products by Quantity")
 
     fig4, ax4 = plt.subplots(figsize=(10, 6))
 
@@ -326,7 +325,7 @@ with col2:
     plt.close(fig4)
 
 # Display product performance table
-st.subheader("📋 Product Performance Details")
+st.subheader("Product Performance Details")
 
 st.dataframe(
     product_summary.sort_values(
