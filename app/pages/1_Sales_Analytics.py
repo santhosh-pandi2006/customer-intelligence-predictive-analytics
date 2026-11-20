@@ -114,7 +114,7 @@ with kpi2:
     st.markdown(f"""
     <div style="background:linear-gradient(135deg,#047857,#10B981);
     padding:20px;border-radius:15px;color:white;min-height:130px;">
-    <h4 style="color:white;">🛒 Total Orders</h4>
+    <h4 style="color:white;">Total Orders</h4>
     <h2 style="color:white;">{total_orders:,}</h2>
     <p>Unique invoices</p>
     </div>
